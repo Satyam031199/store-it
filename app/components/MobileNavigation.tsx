@@ -16,6 +16,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import FileUploader from "./FileUploader";
+import { signOutUser } from "@/lib/actions/user.actions";
 interface Props {
   fullName: string;
   email: string;
@@ -93,7 +94,7 @@ const MobileNavigation = ({
           <Separator className="my-5 bg-light-200/20" />
           <div className="flex flex-col justify-between gap-5 pb-5">
             <FileUploader />
-            <Button type="submit" className="mobile-sign-out-button" onClick={() => {}}>
+            <Button type="submit" className="mobile-sign-out-button" onClick={async () => await signOutUser()}>
               <Image
                 src="/assets/icons/logout.svg"
                 alt="logo"

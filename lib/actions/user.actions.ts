@@ -5,6 +5,8 @@ import { createAdminClient, createSessionClient } from "../appwrite";
 import { appwriteConfig } from "../appwrite/config";
 import { parseStringify } from "../utils";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { avatarPlaceholderUrl } from "@/constants";
 
 const getUserByEmail = async (email: string) => {
   const { databases } = await createAdminClient();
@@ -52,8 +54,7 @@ export const createAccount = async ({
       {
         fullName,
         email,
-        avatar:
-          "https://img.freepik.com/free-psd/3d-illustration-person-with-sunglasses_23-2149436188.jpg",
+        avatar: avatarPlaceholderUrl,
         accountId,
       }
     );
@@ -71,23 +72,40 @@ export const verifySecret = async ({
 }) => {
   try {
     const { account } = await createAdminClient();
-    const session = await account.createSession(accountId,password);
-    (await cookies()).set('appwrite-session', session.secret, {path: '/', httpOnly: true, sameSite: 'strict', secure: true});
-    return parseStringify({sessionId: session.$id});
+    const session = await account.createSession(accountId, password);
+    (await cookies()).set("appwrite-session", session.secret, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+      secure: true,
+    });
+    return parseStringify({ sessionId: session.$id });
   } catch (error) {
-    console.error("Failed to verify OTP ",error)
+    console.error("Failed to verify OTP ", error);
   }
 };
 
 export const getCurrentUser = async () => {
-  const {databases, account} = await createSessionClient();
+  const { databases, account } = await createSessionClient();
   const result = await account.get();
   const user = await databases.listDocuments(
     appwriteConfig.databaseId,
     appwriteConfig.usersCollectionId,
-    [Query.equal('accountId',result.$id)]
+    [Query.equal("accountId", result.$id)]
   );
-  if(user.total<=0) return null;
+  if (user.total <= 0) return null;
   console.log(user.documents[0]);
   return parseStringify(user.documents[0]);
-}
+};
+
+export const signOutUser = async () => {
+  const { account } = await createSessionClient();
+  try {
+    await account.deleteSession("current");
+    (await cookies()).delete('appwrite-session');
+  } catch (error) {
+    handleError(error,'Failed to sign user out');
+  } finally {
+    redirect('/sign-in');
+  }
+};
