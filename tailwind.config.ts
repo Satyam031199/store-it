@@ -15,6 +15,7 @@ const config: Config = {
   				DEFAULT: '#FA7275'
   			},
   			red: '#FF7474',
+			toast: '#EF4444',
   			error: '#b80000',
   			green: '#3DD9B3',
   			blue: '#56B8FF',
