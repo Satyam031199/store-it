@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
       hostname: 'cdn.pixabay.com'
     },{
       protocol: 'https',
-      hostname: 'could.appwrite.io'
+      hostname: 'cloud.appwrite.io'
     },{
       protocol: 'https',
       hostname: 'img.freepik.com'
