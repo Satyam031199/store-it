@@ -25,7 +25,7 @@ export const uploadFile = async ({
       ID.unique(),
       file
     );
-    console.log('Bucket file: ',bucketFile);
+    console.log("Bucket file: ", bucketFile);
     const fileDocument = {
       type: getFileType(bucketFile.name).type,
       name: bucketFile.name,
@@ -98,7 +98,7 @@ export const renameFile = async ({
       fileId,
       {
         name: newName,
-      },
+      }
     );
     revalidatePath(path);
     return parseStringify(updatedFile);
@@ -119,11 +119,29 @@ export const updateFileUsers = async ({
       appwriteConfig.filesCollectionId,
       fileId,
       {
-        users: emails
-      },
+        users: emails,
+      }
     );
     revalidatePath(path);
     return parseStringify(updatedFile);
+  } catch (error) {
+    handleError(error, "Failed to rename file");
+  }
+};
+
+export const deleteFile = async ({ fileId, bucketFileId, path }: DeleteFileProps) => {
+  const { storage, databases } = await createAdminClient();
+  try {
+    const deletedFile = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.filesCollectionId,
+      fileId
+    );
+    if(deletedFile){
+      await storage.deleteFile(appwriteConfig.bucketId,bucketFileId);
+    }    
+    revalidatePath(path);
+    return parseStringify({status: 'success'});
   } catch (error) {
     handleError(error, "Failed to rename file");
   }
