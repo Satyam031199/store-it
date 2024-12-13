@@ -1,11 +1,15 @@
 import Card from "@/app/components/Card";
 import Sort from "@/app/components/Sort";
 import { getFiles } from "@/lib/actions/file.actions";
+import { getFileTypesParams } from "@/lib/utils";
 import { Models } from "node-appwrite";
 
-const page = async ({params}: SearchParamProps) => {
-    const type = ((await params)).type as string || '';
-    const files = await getFiles();
+const page = async ({searchParams, params}: SearchParamProps) => {
+    const type = ((await params)).type as string || '';                     // localhost:3000/images - type - images
+    const searchText = ((await searchParams)?.query) as string || '';       // localhost:3000/images?query=sign&sort=latest - query - sign
+    const sort = ((await searchParams)?.sort) as string || '';              // localhost:3000/images?query=sign&sort=latest - sort - latest
+    const types = getFileTypesParams(type) as FileType[];
+    const files = await getFiles({types, searchText, sort});
   return (
     <div className="page-container">
         <section className="w-full">
