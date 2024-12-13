@@ -23,7 +23,7 @@ const Dashboard = async () => {
   return (
     <div className="dashboard-container">
       <section>
-        <Chart used={totalSpace.used} total={totalSpace.all}/>
+        <Chart used={totalSpace.used}/>
 
         {/* Uploaded file type summaries */}
         <ul className="dashboard-summary-list">
